@@ -1,11 +1,10 @@
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Newsitem from './Newsitem'
+import Spinner from './Spinner'
 
 export class News extends Component {
   static propTypes = {}
-  
-
   constructor(){
       super()
       this.state = {
@@ -16,46 +15,52 @@ export class News extends Component {
   }
 
   async componentDidMount() {
-      console.log("this is ");
+    //   console.log("this is ");
       let url = "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=782cc09e779d4d7d940f866f4d78db4e&page=1";
+      this.setState({loading: true});
       let data = await fetch(url);
       let parseData = await data.json();
-      console.log(parseData);
-      this.setState({article: parseData.articles, totalArticles: parseData.totalResults})
+    //   console.log(parseData);
+      this.setState({article: parseData.articles, 
+        totalArticles: parseData.totalResults,
+        loading: false
+    })
   }
 
   handlenextclick = async () => {
 
-        if (this.state.page+1 > Math.ceil(this.state.totalResults/20)) {
-            
-        }
-        else{
+        if (!(this.state.page+1 > Math.ceil(this.state.totalResults/20))) {      
             let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=782cc09e779d4d7d940f866f4d78db4e&page=${this.state.page+1}&pageSize=20`;
+            this.setState({loading: true});
             let data = await fetch(url);
             let parseData = await data.json();
-            console.log(parseData);
+            // console.log(parseData);
             this.setState({
                 page: this.state.page+1,
-                article: parseData.articles
+                article: parseData.articles,
+                loading: false
             })
-        }
   }
+}
 
-  handleprevclick = async () => {
-    let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=782cc09e779d4d7d940f866f4d78db4e&page=${this.state.page-1}&pageSize=20`;
-    let data = await fetch(url);
-    let parseData = await data.json();
-    console.log(parseData);
-  this.setState({
-      page: this.state.page-1,
-      article: parseData.articles
-  })
+    handleprevclick = async () => {
+        let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=782cc09e779d4d7d940f866f4d78db4e&page=${this.state.page-1}&pageSize=20`;
+        this.setState({loading:true});
+        let data = await fetch(url);
+        let parseData = await data.json();
+        // console.log(parseData);
+    this.setState({
+        page: this.state.page-1,
+        article: parseData.articles,
+        loading: false,
+    })
   }
 
   render() {
 
     return (
       <div>
+          {this.state.loading && <Spinner/>}
             <div className="container my-3">
                     <div className="row">
                         {this.state.article.map((element)=>{
